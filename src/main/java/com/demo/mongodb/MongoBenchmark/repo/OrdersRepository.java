@@ -5,6 +5,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.mongodb.repository.Update;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +49,8 @@ public interface OrdersRepository extends MongoRepository<Orders, String> {
                                                        @Param("endDate") Date endDate);
 
     @Transactional
-    @Query(value = "{ 'orderId': :#{#orderId}, 'orderItem.order_item_id': 0 }",
-            fields = "{ 'orderItem.newOrderItemStatus': :#{#newOrderItemStatus} }")
-    String updateOrderItemStatus(@Param("orderId") int orderId,
+    @Query("{ 'orderId': :#{#orderId} }")
+    @Update("{'$set': {'orderItem.$[].order_item_status': :#{#newOrderItemStatus} }}")
+    int updateOrderItemStatus(@Param("orderId") Long orderId,
                                  @Param("newOrderItemStatus") int newOrderItemStatus);
 }

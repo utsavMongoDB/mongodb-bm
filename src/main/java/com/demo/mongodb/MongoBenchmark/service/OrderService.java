@@ -29,6 +29,17 @@ public class OrderService {
         }
     }
 
+    public void updateFirstOrderItemStatus(Long orderId, int newOrderItemStatus) {
+        Orders order = (Orders) ordersRepository.findByOrderId(orderId).get(0);
+
+        if (order != null && order.getOrderItem() != null && !order.getOrderItem().isEmpty()) {
+            Orders firstOrderItem = (Orders) order.getOrderItem().get(0);
+            firstOrderItem.getOrderItem().get(0).replace("order_item_status", newOrderItemStatus);
+            ordersRepository.save(order);
+        }
+    }
+
+
     public static Orders generateOrdersDto(Long orderId) {
         Random random = new Random();
 

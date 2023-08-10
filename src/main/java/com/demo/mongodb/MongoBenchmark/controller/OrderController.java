@@ -86,10 +86,12 @@ public class OrderController {
 
     @PutMapping("/updateOrderItemStatus/{orderId}")
     public String updateOrderItemStatus(
-            @PathVariable int orderId
+            @PathVariable Long orderId
     ) {
         int orderStatus = random.nextInt(100);
-        System.out.println();
-        return ordersRepository.updateOrderItemStatus(orderId, orderStatus);
+        System.out.println(orderStatus);
+//        orderService.updateFirstOrderItemStatus(orderId, orderStatus);
+        ordersRepository.updateOrderItemStatus(orderId, orderStatus);
+        return "Updated: " + orderId;
     }
 }
