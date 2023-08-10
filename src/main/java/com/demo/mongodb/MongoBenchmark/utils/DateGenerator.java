@@ -36,6 +36,11 @@ public class DateGenerator {
             endDate = MAX_DATE;
         }
 
+        if (startDate.equals(endDate)) {
+            calendar.add(Calendar.DATE, 1); // Add one more day
+            endDate = calendar.getTime();
+        }
+
         return endDate;
     }
 }

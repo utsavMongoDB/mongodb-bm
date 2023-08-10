@@ -76,6 +76,8 @@ public class OrderController {
         try {
             Date randomStartDate = DateGenerator.generateRandomStartDate();
             Date randomEndDate = DateGenerator.generateRandomEndDate(randomStartDate);
+//            System.out.println("Start Date :" + randomStartDate);
+//            System.out.println("End Date :" + randomEndDate);
             return ordersRepository.findTopProductsInDateRange(randomStartDate, randomEndDate);
         } catch (Exception e) {
             e.printStackTrace();
