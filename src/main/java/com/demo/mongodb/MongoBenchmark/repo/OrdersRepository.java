@@ -2,6 +2,7 @@ package com.demo.mongodb.MongoBenchmark.repo;
 
 import com.demo.mongodb.MongoBenchmark.model.Orders;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -12,13 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 
+@EnableMongoAuditing
 public interface OrdersRepository extends MongoRepository<Orders, String> {
 
     @Query("{'orderId': ?0}")
-    List<Order> findByOrderId(Long orderId);
+    List<Orders> findByOrderId(Long orderId);
 
     @Query(value = "{ 'orderId': :orderId }", fields = "{ 'subTotal': 1 }")
-    List<Order> findSubTotalByOrderId(@Param("orderId") Integer orderId);
+    List<Orders> findSubTotalByOrderId(@Param("orderId") Integer orderId);
 
     @Aggregation(pipeline = {
             "{$match: { 'orderDate': { $gte: :#{#startDate}, $lte: :#{#endDate} } } }",
@@ -48,9 +50,14 @@ public interface OrdersRepository extends MongoRepository<Orders, String> {
                                                        @Param("startDate") Date startDate,
                                                        @Param("endDate") Date endDate);
 
+
+    @Query(value = "{ 'delivery_details.shipment_id': :#{#shipmentId} }", fields = "{ 'orderId': 1, '_id': 0 }")
+    Orders findByShipmentId(int shipmentId);
+
+
     @Transactional
     @Query("{ 'orderId': :#{#orderId} }")
     @Update("{'$set': {'orderItem.$[].order_item_status': :#{#newOrderItemStatus} }}")
-    int updateOrderItemStatus(@Param("orderId") Long orderId,
+    void updateOrderItemStatus(@Param("orderId") Long orderId,
                                  @Param("newOrderItemStatus") int newOrderItemStatus);
 }

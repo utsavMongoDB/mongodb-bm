@@ -5,6 +5,7 @@ import com.demo.mongodb.MongoBenchmark.repo.OrdersRepository;
 import com.demo.mongodb.MongoBenchmark.service.OrderService;
 import com.demo.mongodb.MongoBenchmark.utils.DateGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -83,6 +84,11 @@ public class OrderController {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @GetMapping("/findByShipmentId/{shipmentId}")
+    public Orders findByShipmentId(@PathVariable int shipmentId) {
+        return ordersRepository.findByShipmentId(shipmentId);
     }
 
 
