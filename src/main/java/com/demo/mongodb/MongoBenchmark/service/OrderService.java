@@ -15,18 +15,9 @@ public class OrderService {
     @Autowired
     private OrdersRepository ordersRepository;
 
-    public String saveOrder(Long orderId) {
-        try {
-            Orders order = generateOrdersDto(orderId);
-            if (ordersRepository.findByOrderId(orderId).size() >= 1) {
-                return "Already exists";
-            }
-            ordersRepository.save(order);
-            return "Order saved";
-        }
-        catch (Exception e) {
-            return "Error adding order";
-        }
+    public Orders saveOrder(Long orderId) {
+        Orders order = generateOrdersDto(orderId);
+        return ordersRepository.save(order);
     }
 
     public void updateFirstOrderItemStatus(Long orderId, int newOrderItemStatus) {
