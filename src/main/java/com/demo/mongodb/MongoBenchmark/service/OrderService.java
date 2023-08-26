@@ -1,8 +1,11 @@
 package com.demo.mongodb.MongoBenchmark.service;
 
 import com.demo.mongodb.MongoBenchmark.model.Orders;
+import com.demo.mongodb.MongoBenchmark.model.Product;
 import com.demo.mongodb.MongoBenchmark.repo.OrdersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,18 +18,13 @@ public class OrderService {
     @Autowired
     private OrdersRepository ordersRepository;
 
-    public Orders saveOrder(Long orderId) {
-        Orders order = generateOrdersDto(orderId);
-        return ordersRepository.save(order);
-    }
-
-    public void updateFirstOrderItemStatus(Long orderId, int newOrderItemStatus) {
-        Orders order = (Orders) ordersRepository.findByOrderId(orderId).get(0);
-
-        if (order != null && order.getOrderItem() != null && !order.getOrderItem().isEmpty()) {
-            Orders firstOrderItem = (Orders) order.getOrderItem().get(0);
-            firstOrderItem.getOrderItem().get(0).replace("order_item_status", newOrderItemStatus);
-            ordersRepository.save(order);
+    public Orders saveOrder(Long orderId) throws Exception {
+        try {
+            Orders order = generateOrdersDto(orderId);
+            return ordersRepository.save(order);
+        }
+        catch (Exception e){
+            throw new Exception("OrderId already exists");
         }
     }
 
@@ -124,5 +122,4 @@ public class OrderService {
     private static int generateRandomNumber(int min, int max) {
         return new Random().nextInt(max - min + 1) + min;
     }
-
 }

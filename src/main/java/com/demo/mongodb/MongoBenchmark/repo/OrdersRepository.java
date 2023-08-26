@@ -24,14 +24,6 @@ public interface OrdersRepository extends MongoRepository<Orders, String> {
     @Query(value = "{ 'orderId': :orderId }", fields = "{ 'subTotal': 1 }")
     List<Orders> findSubTotalByOrderId(@Param("orderId") Integer orderId);
 
-//    @Aggregation(pipeline = {
-//            "{$match: { 'orderDate': { $gte: :#{#startDate}, $lte: :#{#endDate} } } }",
-//            "{$group: { _id: '$userId', total_order_amount: { $sum: '$totalAmount' } } }",
-//            "{$sort: { total_order_amount: -1 } }"
-//    })
-//    List<Map<Integer, Integer>> getTotalOrderAmountInRange(@Param("startDate") Date startDate,
-//                                                           @Param("endDate") Date endDate);
-
     @Aggregation(pipeline = {
             "{$match: { 'orderDate': { $gte: :#{#startDate}, $lte: :#{#endDate} } } }",
             "{$unwind: '$orderItem'}",
@@ -57,9 +49,8 @@ public interface OrdersRepository extends MongoRepository<Orders, String> {
                                                        @Param("endDate") Date endDate);
 
 
-    @Query(value = "{ 'delivery_details.shipment_id': :#{#shipmentId} }")
+    @Query(value = "{ 'deliveryDetails.shipment_id': :#{#shipmentId} }")
     Orders findByShipmentId(int shipmentId);
-
 
     @Transactional
     @Query("{ 'orderId': :#{#orderId} }")
