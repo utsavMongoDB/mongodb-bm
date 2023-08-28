@@ -2,6 +2,7 @@ package com.demo.mongodb.MongoBenchmark.repo;
 
 import com.demo.mongodb.MongoBenchmark.model.Orders;
 import com.demo.mongodb.MongoBenchmark.model.Product;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.*;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,7 +60,7 @@ public class OrderRepository {
 //        return mongoTemplate.aggregate(aggregation, "orders", Product.class).getMappedResults();
 //    }
 
-    public List<Product> findProductsOrderedByUserInDateRange(int userId, Date startDate, Date endDate) {
+    public Object findProductsOrderedByUserInDateRange(int userId, Date startDate, Date endDate) throws JSONException {
         AggregationOperation match = Aggregation.match(
                 Criteria.where("userId").is(userId)
                         .and("orderDate").gte(startDate).lte(endDate)
@@ -82,12 +85,15 @@ public class OrderRepository {
                 match,
                 unwindOrderItem,
                 groupOrderedProductIds,
-                lookupProducts,
-                unwindOrderedProducts,
-                replaceRoot
+                lookupProducts
         );
 
-        return mongoTemplate.aggregate(aggregation, "orders", Product.class).getMappedResults();
+        AggregationResults<Product> results = mongoTemplate.aggregate(aggregation, "orders", Product.class);
+        JSONObject rootObject = new JSONObject(results.getRawResults().toJson());
+        JSONArray resultsArray = rootObject.getJSONArray("results");
+        JSONObject resultObject = resultsArray.getJSONObject(0); // Assuming there's only one result object
+        JSONArray orderedProductsArray = resultObject.getJSONArray("ordered_products");
+        return orderedProductsArray.toString();
     }
 
 

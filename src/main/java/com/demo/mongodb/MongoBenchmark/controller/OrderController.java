@@ -6,6 +6,7 @@ import com.demo.mongodb.MongoBenchmark.repo.OrderRepository;
 import com.demo.mongodb.MongoBenchmark.repo.OrdersRepository;
 import com.demo.mongodb.MongoBenchmark.service.OrderService;
 import com.demo.mongodb.MongoBenchmark.utils.DateGenerator;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +39,7 @@ public class OrderController {
      * @return
      */
     @GetMapping("/get/{userId}")
-    public List<Product> findProductsOrderedByUserInDateRange(@PathVariable int userId) {
+    public Object findProductsOrderedByUserInDateRange(@PathVariable int userId) {
         try {
             Date randomStartDate = DateGenerator.generateRandomStartDate();
             Date randomEndDate = DateGenerator.generateRandomEndDate(randomStartDate);
