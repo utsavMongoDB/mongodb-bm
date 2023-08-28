@@ -24,16 +24,49 @@ public class OrderRepository {
         this.mongoTemplate = mongoTemplate;
     }
 
+//    public List<Product> findProductsOrderedByUserInDateRange(int userId, Date startDate, Date endDate) {
+//        AggregationOperation match = Aggregation.match(
+//                Criteria.where("userId").is(userId)
+//                        .and("orderDate").gte(startDate).lte(endDate)
+//        );
+//
+//        AggregationOperation unwindOrderItem = Aggregation.unwind("$orderItem");
+//
+//        AggregationOperation groupOrderedProductIds = Aggregation.group()
+//                .addToSet(ConvertOperators.ToLong.toLong("$orderItem.product_id")).as("ordered_product_ids");
+//
+//        LookupOperation lookupProducts = LookupOperation.newLookup()
+//                .from("products")
+//                .localField("ordered_product_ids")
+//                .foreignField("product_id")
+//                .as("ordered_products");
+//
+//        AggregationOperation unwindOrderedProducts = Aggregation.unwind("$ordered_products");
+//
+//        ReplaceRootOperation replaceRoot = ReplaceRootOperation.builder().withValueOf("$ordered_products");
+//
+//        Aggregation aggregation = Aggregation.newAggregation(
+//                match,
+//                unwindOrderItem,
+//                groupOrderedProductIds,
+//                lookupProducts,
+//                unwindOrderedProducts,
+//                replaceRoot
+//        );
+//
+//        return mongoTemplate.aggregate(aggregation, "orders", Product.class).getMappedResults();
+//    }
+
     public List<Product> findProductsOrderedByUserInDateRange(int userId, Date startDate, Date endDate) {
         AggregationOperation match = Aggregation.match(
                 Criteria.where("userId").is(userId)
                         .and("orderDate").gte(startDate).lte(endDate)
         );
 
-        AggregationOperation unwindOrderItem = Aggregation.unwind("$orderItem");
+        AggregationOperation unwindOrderItem = Aggregation.unwind("orderItem");
 
         AggregationOperation groupOrderedProductIds = Aggregation.group()
-                .addToSet(ConvertOperators.ToLong.toLong("$orderItem.product_id")).as("ordered_product_ids");
+                .addToSet("orderItem.product_id").as("ordered_product_ids");
 
         LookupOperation lookupProducts = LookupOperation.newLookup()
                 .from("products")
@@ -41,9 +74,9 @@ public class OrderRepository {
                 .foreignField("product_id")
                 .as("ordered_products");
 
-        AggregationOperation unwindOrderedProducts = Aggregation.unwind("$ordered_products");
+        AggregationOperation unwindOrderedProducts = Aggregation.unwind("ordered_products");
 
-        ReplaceRootOperation replaceRoot = ReplaceRootOperation.builder().withValueOf("$ordered_products");
+        ReplaceRootOperation replaceRoot = ReplaceRootOperation.builder().withValueOf("ordered_products");
 
         Aggregation aggregation = Aggregation.newAggregation(
                 match,
@@ -56,6 +89,8 @@ public class OrderRepository {
 
         return mongoTemplate.aggregate(aggregation, "orders", Product.class).getMappedResults();
     }
+
+
 
     public List<Object> findTopProductsInDateRange(Date startDate, Date endDate) {
         AggregationOperation match = Aggregation.match(
