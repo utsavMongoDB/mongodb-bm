@@ -89,14 +89,14 @@ public class OrderRepository {
         );
 
         AggregationResults<Product> results = mongoTemplate.aggregate(aggregation, "orders", Product.class);
-        JSONObject rootObject = new JSONObject(results.getRawResults().toJson());
-        JSONArray resultsArray = rootObject.getJSONArray("results");
-        if (resultsArray.length() > 0) {
-            JSONObject resultObject = resultsArray.getJSONObject(0); // Assuming there's only one result object
-            JSONArray orderedProductsArray = resultObject.getJSONArray("ordered_products");
-            return orderedProductsArray.toString();
-        }
-        return null;
+//        JSONObject rootObject = new JSONObject(results.getRawResults().toJson());
+//        JSONArray resultsArray = rootObject.getJSONArray("results");
+//        if (resultsArray.length() > 0) {
+//            JSONObject resultObject = resultsArray.getJSONObject(0);
+//            JSONArray orderedProductsArray = resultObject.getJSONArray("ordered_products");
+//            return orderedProductsArray.toString();
+//        }
+        return results.getRawResults();
     }
 
 
