@@ -1,12 +1,11 @@
 package com.demo.mongodb.MongoBenchmark.controller;
 
 import com.demo.mongodb.MongoBenchmark.model.Orders;
-import com.demo.mongodb.MongoBenchmark.model.Product;
 import com.demo.mongodb.MongoBenchmark.repo.OrderRepository;
 import com.demo.mongodb.MongoBenchmark.repo.OrdersRepository;
+import com.demo.mongodb.MongoBenchmark.service.OrderItemsService;
 import com.demo.mongodb.MongoBenchmark.service.OrderService;
 import com.demo.mongodb.MongoBenchmark.utils.DateGenerator;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +20,8 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
     @Autowired
+    private OrderItemsService orderItemsService;
+    @Autowired
     private OrdersRepository ordersRepository;
     @Autowired
     private OrderRepository orderRepository;
@@ -32,6 +33,13 @@ public class OrderController {
         return orderService.saveOrder(orderId);
     }
 
+    @PostMapping("/addOrderItems/{orderId}")
+    public String addOrderItems(
+            @PathVariable int orderId
+    ) throws Exception {
+        orderItemsService.saveOrderItems(orderId);
+        return "Added OrderItems Successfully";
+    }
 
     /**
      * Find all products ordered by a user in a particular date range
@@ -81,4 +89,11 @@ public class OrderController {
         return "Order modified: " + orderId;
     }
 
+    @GetMapping("/findOrdersByShipmentId_v2/{clientName}")
+    public Object findOrdersByShipmentId_v2(
+            @PathVariable int clientName
+    ) {
+        System.out.println(clientName);
+        return orderRepository.findOrdersByShipmentId_v2(clientName);
+    }
 }
