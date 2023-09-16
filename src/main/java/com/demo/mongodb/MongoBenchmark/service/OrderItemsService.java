@@ -37,7 +37,8 @@ public class OrderItemsService {
         int item_id = (orderId - 1) * 100 + itemId + 1;
         System.out.println("item_id : " + item_id);
         OrderItems ordersItemDto = new OrderItems();
-        ordersItemDto.setOrderItemId(item_id);
+//        ordersItemDto.setOrderItemId(item_id);
+        ordersItemDto.setId(item_id);
         ordersItemDto.setRate(rate);
         ordersItemDto.setQuantity(quantity);
         ordersItemDto.setTotal(total);

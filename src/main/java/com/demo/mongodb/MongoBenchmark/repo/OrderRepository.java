@@ -7,6 +7,8 @@ import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -26,40 +28,9 @@ public class OrderRepository {
     @Autowired
     public OrderRepository(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+        MappingMongoConverter converter = (MappingMongoConverter) this.mongoTemplate.getConverter();
+        converter.setTypeMapper(new DefaultMongoTypeMapper(null));
     }
-
-//    public List<Product> findProductsOrderedByUserInDateRange(int userId, Date startDate, Date endDate) {
-//        AggregationOperation match = Aggregation.match(
-//                Criteria.where("userId").is(userId)
-//                        .and("orderDate").gte(startDate).lte(endDate)
-//        );
-//
-//        AggregationOperation unwindOrderItem = Aggregation.unwind("$orderItem");
-//
-//        AggregationOperation groupOrderedProductIds = Aggregation.group()
-//                .addToSet(ConvertOperators.ToLong.toLong("$orderItem.product_id")).as("ordered_product_ids");
-//
-//        LookupOperation lookupProducts = LookupOperation.newLookup()
-//                .from("products")
-//                .localField("ordered_product_ids")
-//                .foreignField("product_id")
-//                .as("ordered_products");
-//
-//        AggregationOperation unwindOrderedProducts = Aggregation.unwind("$ordered_products");
-//
-//        ReplaceRootOperation replaceRoot = ReplaceRootOperation.builder().withValueOf("$ordered_products");
-//
-//        Aggregation aggregation = Aggregation.newAggregation(
-//                match,
-//                unwindOrderItem,
-//                groupOrderedProductIds,
-//                lookupProducts,
-//                unwindOrderedProducts,
-//                replaceRoot
-//        );
-//
-//        return mongoTemplate.aggregate(aggregation, "orders", Product.class).getMappedResults();
-//    }
 
     public Object findProductsOrderedByUserInDateRange(int userId, Date startDate, Date endDate) throws JSONException {
         AggregationOperation match = Aggregation.match(

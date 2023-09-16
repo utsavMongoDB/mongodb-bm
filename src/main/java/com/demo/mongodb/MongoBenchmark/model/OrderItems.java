@@ -2,7 +2,9 @@ package com.demo.mongodb.MongoBenchmark.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,8 +13,9 @@ import java.util.Map;
 @Data
 @Document(collection = "order_items")
 public class OrderItems {
-    @JsonProperty("order_item_id")
-    private int orderItemId;
+    @MongoId
+    @JsonProperty("_id")
+    private int id;
 
     @JsonProperty("total")
     private int total;
