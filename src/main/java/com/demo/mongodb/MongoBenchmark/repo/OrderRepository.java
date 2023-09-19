@@ -3,6 +3,7 @@ package com.demo.mongodb.MongoBenchmark.repo;
 import com.demo.mongodb.MongoBenchmark.model.OrderItems;
 import com.demo.mongodb.MongoBenchmark.model.Orders;
 import com.demo.mongodb.MongoBenchmark.model.Product;
+import com.mongodb.client.model.Aggregates;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -16,7 +17,15 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.bson.conversions.Bson;
 
+import static com.mongodb.client.model.Accumulators.sum;
+import static com.mongodb.client.model.Aggregates.match;
+import static com.mongodb.client.model.Aggregates.project;
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Filters.eq;
+
+import javax.swing.text.Document;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -118,15 +127,23 @@ public class OrderRepository {
 
     public Object findOrdersByShipmentId_v2(int clientName) {
         // Create the aggregation operations
-        AggregationOperation match = Aggregation.match(Criteria.where("deliveryDetails.shipment_id").is(clientName));
-        AggregationOperation lookup = Aggregation.lookup("order_items", "orderId", "orderId", "result");
-        AggregationOperation projection = Aggregation.project("result").andExclude("_id");
+//        AggregationOperation match = Aggregation.match(Criteria.where("deliveryDetails.shipment_id").is(clientName));
+//        AggregationOperation lookup = Aggregation.lookup("order_items", "orderId", "orderId", "result");
+//        AggregationOperation projection = Aggregation.project("result").andExclude("_id");
 
         // Build the aggregation pipeline
-        Aggregation aggregation = Aggregation.newAggregation(match, lookup, projection);
+//        Aggregation aggregation = Aggregation.newAggregation(match, lookup, projection);
 
         // Execute the aggregation query
-        return Collections.singletonList(mongoTemplate.aggregate(aggregation, "orders", OrderItems.class)
-                .getRawResults().get("results")).get(0);
+        Bson match = match(eq("deliveryDetails.shipment_id", clientName));
+        Bson lookup = Aggregates.lookup("order_items", "orderId", "orderId", "result");
+        Bson project = project(fields(excludeId(), include("result")));
+
+        Collection<org.bson.Document> results = mongoTemplate.getCollection("orders").aggregate(Arrays.asList(match, lookup, project))
+                .into(new ArrayList<>());
+
+        return results;
+//        return Collections.singletonList(mongoTemplate.aggregate(aggregation, "orders", OrderItems.class)
+//                .getRawResults().get("results")).get(0);
     }
 }
