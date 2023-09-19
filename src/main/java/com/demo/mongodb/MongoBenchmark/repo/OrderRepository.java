@@ -125,25 +125,13 @@ public class OrderRepository {
     }
 
 
-    public Object findOrdersByShipmentId_v2(int clientName) {
-        // Create the aggregation operations
-//        AggregationOperation match = Aggregation.match(Criteria.where("deliveryDetails.shipment_id").is(clientName));
-//        AggregationOperation lookup = Aggregation.lookup("order_items", "orderId", "orderId", "result");
-//        AggregationOperation projection = Aggregation.project("result").andExclude("_id");
-
-        // Build the aggregation pipeline
-//        Aggregation aggregation = Aggregation.newAggregation(match, lookup, projection);
-
+    public Object findOrdersByShipmentId_v2(int shipmentId) {
         // Execute the aggregation query
-        Bson match = match(eq("deliveryDetails.shipment_id", clientName));
+        Bson match = match(eq("deliveryDetails.shipment_id", shipmentId));
         Bson lookup = Aggregates.lookup("order_items", "orderId", "orderId", "result");
         Bson project = project(fields(excludeId(), include("result")));
 
-        Collection<org.bson.Document> results = mongoTemplate.getCollection("orders").aggregate(Arrays.asList(match, lookup, project))
+        return mongoTemplate.getCollection("orders").aggregate(Arrays.asList(match, lookup, project))
                 .into(new ArrayList<>());
-
-        return results;
-//        return Collections.singletonList(mongoTemplate.aggregate(aggregation, "orders", OrderItems.class)
-//                .getRawResults().get("results")).get(0);
     }
 }

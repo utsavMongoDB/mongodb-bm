@@ -93,7 +93,7 @@ public class OrderController {
     public Object findOrdersByShipmentId_v2(
             @PathVariable int clientName
     ) {
-        System.out.println(clientName);
+//        System.out.println(clientName);
         return orderRepository.findOrdersByShipmentId_v2(clientName);
     }
 }
